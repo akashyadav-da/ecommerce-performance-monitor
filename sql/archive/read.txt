@@ -1,0 +1,5 @@
+# Archived SQL Queries
+
+This folder contains earlier SQL queries used during project development, data validation, revenue investigation, and testing.
+
+These queries are retained for reference and are not necessarily part of the final automated reporting workflow.

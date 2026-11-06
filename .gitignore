@@ -1,0 +1,31 @@
+# Python environment
+.venv/
+__pycache__/
+*.py[cod]
+
+# Databases and backups
+*.duckdb
+*.db
+
+# Backup scripts
+send_to_n8n_backup.py
+
+# Generated Parquet files
+data/processed/*.parquet
+# Generated datasets
+data/
+
+# Logs and generated reports
+logs/*
+!logs/.gitkeep
+reports/*
+!reports/.gitkeep
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# OS files
+.DS_Store
+Thumbs.db

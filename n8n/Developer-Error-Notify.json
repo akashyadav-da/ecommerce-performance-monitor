@@ -1,0 +1,71 @@
+{
+  "name": "Developer-Error-Notify",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "developer-error",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "5648e88f-27a6-4648-8fd3-02b8592c5d49",
+      "name": "Webhook",
+      "webhookId": "ee36e482-253f-4a6c-8212-b2da6143d44a"
+    },
+    {
+      "parameters": {
+        "sendTo": "your-email@example.com",
+        "subject": "E-commerce Monitor – Pipeline Failure",
+        "message": "=\n<div style=\"font-family: Arial, sans-serif; max-width: 680px; margin: auto; color: #333; border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden;\">\n\n  <div style=\"background: #991b1b; color: white; padding: 24px;\">\n    <h2 style=\"margin: 0 0 6px;\">&#9888; PIPELINE FAILURE</h2>\n    <p style=\"margin: 0; font-size: 14px;\">E-commerce Performance Monitor</p>\n  </div>\n\n  <div style=\"padding: 24px;\">\n    <h3 style=\"margin-top: 0;\">Developer Error Notification</h3>\n\n    <p>A pipeline execution has failed unexpectedly. The business report was not successfully delivered.</p>\n\n    <h3 style=\"border-bottom: 1px solid #e5e7eb; padding-bottom: 8px;\">Failure Details</h3>\n\n    <table style=\"width: 100%; border-collapse: collapse; font-size: 14px;\">\n      <tr>\n        <td style=\"padding: 10px; background: #f9fafb;\"><strong>Failed Stage</strong></td>\n        <td style=\"padding: 10px;\">{{ $json.body.stage }}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; background: #f9fafb;\"><strong>Error Type</strong></td>\n        <td style=\"padding: 10px;\">{{ $json.body.error_type }}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; background: #f9fafb;\"><strong>Timestamp</strong></td>\n        <td style=\"padding: 10px;\">{{ $json.body.timestamp }}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; background: #f9fafb;\"><strong>Report Status</strong></td>\n        <td style=\"padding: 10px; color: #b91c1c;\"><strong>{{ $json.body.report_status }}</strong></td>\n      </tr>\n    </table>\n\n    <div style=\"margin-top: 22px; padding: 16px; background: #fef2f2; border-left: 4px solid #dc2626; border-radius: 4px;\">\n      <strong style=\"color: #991b1b;\">Error Reason</strong>\n      <p style=\"margin-bottom: 0; font-size: 14px;\">{{ $json.body.error }}</p>\n    </div>\n\n    <h3 style=\"margin-top: 24px;\">Technical Traceback</h3>\n\n    <pre style=\"white-space: pre-wrap; overflow-wrap: anywhere; background: #f3f4f6; padding: 14px; border-radius: 6px; font-size: 12px; line-height: 1.5;\">{{ $json.body.traceback }}</pre>\n\n    <div style=\"margin-top: 22px; padding: 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px;\">\n      <strong>Required Action</strong>\n      <p style=\"margin-bottom: 0; font-size: 14px;\">\n        Investigate the failed stage, resolve the reported issue, and verify the source data before rerunning the pipeline.\n      </p>\n    </div>\n  </div>\n\n  <div style=\"background: #f9fafb; border-top: 1px solid #e5e7eb; padding: 15px; text-align: center; color: #6b7280; font-size: 12px;\">\n    Automated notification · E-commerce Performance Monitor\n  </div>\n\n</div>\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "a80beced-c7e8-4cd6-8af6-7e8688d23fb7",
+      "name": "Send a message",
+      "webhookId": "0bf6f8f0-0367-4a99-b529-f6f3def10e4a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_AFTER_IMPORT",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "8e2b4aa6-7dae-4d7c-8a82-b00a27a2c61b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c149c1c9ba90fda4a80c2ce8ce9e5808d622aebaa5dfbb545ae8d90c818aef60"
+  },
+  "nodeGroups": [],
+  "id": "xcU1xgxmsxXlWrBm",
+  "tags": []
+}

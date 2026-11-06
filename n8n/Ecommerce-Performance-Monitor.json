@@ -1,0 +1,402 @@
+{
+  "name": "Ecommerce-Performance-Monitor",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ecommerce-daily-report",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        -976,
+        640
+      ],
+      "id": "a28772f6-b87e-4d38-bcbb-e742b616a1cb",
+      "name": "Webhook",
+      "webhookId": "ffcc23b4-0f80-41fc-8343-d86cf80e5c8f"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        -448,
+        224
+      ],
+      "id": "83f477e7-2bc5-44e3-9949-c45e8447f127",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "REPLACE_AFTER_IMPORT",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "your-email@example.com",
+        "subject": "=Daily E-commerce Performance Brief – {{ $('Webhook').first().json.body.report_metadata.report_date }}",
+        "message": "={{ $json.html }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        48,
+        288
+      ],
+      "id": "9bdc4f67-0fcc-420f-aec8-ef642527850b",
+      "name": "Send a message",
+      "webhookId": "211e4154-40a9-4827-888e-ab47bc451251",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_AFTER_IMPORT",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        -448,
+        624
+      ],
+      "id": "5dfd6767-6499-49bb-a5f7-f480e645c76f",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "REPLACE_AFTER_IMPORT",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an e-commerce business performance analyst.\n\nYour task is to interpret the daily performance data and produce a concise, evidence-based business brief.\n\n## Analysis rules\n\n1. Use only the supplied JSON as your evidence.\n2. Report all monetary values in INR (₹).\n3. Compare revenue against the previous day and the same weekday last week.\n4. Identify significant movements across channels, categories, products and regions when investigation data is available.\n5. Compare order volume and AOV to understand revenue movements.\n6. Treat refunds as separate financial movements.\n7. A negative decline contribution indicates an offset to the decline, not a cause.\n8. Be cautious with small order counts.\n9. Never invent numbers, calculations or causal explanations.\n10. If data quality is NOT_CHECKED, explicitly disclose that checks have not been completed.\n11. Clearly distinguish observed facts from hypotheses and recommended checks.\n12. Separate observed facts from hypotheses. Use labels such as \"Observed\" and \"Possible explanation\".\n13. Recommendations must be framed as checks to perform, not explanations of what happened.\n14. Only claim that a channel contributed to a decline when supported by the contribution metric. Identify growing channels as offsets.\n15. Do not infer customer cohorts, stock availability, advertising changes, website issues or logistics problems from revenue data alone.\n16. If the data does not establish a cause, explicitly state: \"The available data identifies where performance changed, but does not establish why.\n17. The channel contribution percentage represents contribution to the overall sales decline before refunds, not the net revenue decline after refunds.\n18. Do not claim that a product-mix shift caused lower AOV unless the data directly establishes it. Label it as a hypothesis to investigate.\n\n## Required report\n\n### 1. Daily Performance\n- Report date\n- Net revenue\n- Valid orders\n- Refund count and amount\n\n### 2. Performance Alert\n- Alert status\n- Revenue change versus previous day\n- Revenue change versus the same weekday last week\n- What these comparisons indicate\n\n### 3. Key Findings\nHighlight the most significant observed movements. Include previous value, current value and percentage change where available.\n\n### 4. Areas to Investigate\nSuggest practical checks based on the evidence. Do not present suggestions as established causes.\nWhen discussing channel contribution, clearly specify whether it refers to sales before refunds or net revenue after refunds.\n\nWhen suggesting a product-mix explanation, explicitly label it as a hypothesis and state that the available data does not establish the cause.\n\n### 5. Data Quality and Limitations\nMention data quality status, sample-size limitations and missing evidence.\n\n## Writing style\n- Concise and professional.\n- Use clear business language.\n- Prioritize important findings.\n- Avoid generic recommendations.\n- Do not describe every row in the JSON.\n- Never make unsupported causal claims.\n\n## Input data\n\n{{ JSON.stringify($json.body, null, 2) }}\n\n## Output Requirements\n\nReturn the business analysis as one valid JSON object.\n\nDo not generate HTML, CSS, Markdown, explanations or code fences.\n\nUse exactly this structure:\n\n{\n  \"daily_performance\": {\n    \"report_date\": \"\",\n    \"net_revenue\": \"\",\n    \"valid_orders\": \"\",\n    \"refund_count\": \"\",\n    \"refund_amount\": \"\"\n  },\n  \"performance_alert\": {\n    \"alert_status\": \"ALERT\",\n    \"previous_day_comparison\": \"\",\n    \"previous_day_change\": \"\",\n    \"previous_day_triggered\": false,\n    \"same_weekday_comparison\": \"\",\n    \"same_weekday_change\": \"\",\n    \"same_weekday_triggered\": false,\n    \"alert_explanation\": \"\"\n  },\n  \"key_findings\": [\n  {\n    \"priority\": \"High\",\n    \"title\": \"\",\n    \"observation\": \"\",\n    \"business_impact\": \"\"\n  }\n],\n\n  \"areas_to_investigate\": {\n    \"observed_facts\": [],\n    \"possible_explanations\": [],\n    \"recommended_checks\": []\n  },\n  \"data_quality\": {\n    \"status\": \"\",\n    \"limitations\": []\n  }\n}\n\nRules:\n\n1. Preserve all important numerical values and findings from the supplied data.\n2. Use INR (₹) for monetary values.\n3. Use the exact comparison labels: previous day and same weekday last week.\n4. Set each triggered field to true only when that comparison crosses the configured alert threshold.\n5. Rank key findings by absolute financial impact.\n6. Keep observed facts, possible explanations and recommended checks separate.\n7. Never invent missing values. Use \"Not available\" when evidence is missing.\n8. Use concise, professional business language.\n9. Return valid JSON only, with all required keys present.\n10. Do not change the underlying business calculations or alert logic.\n11. Do not describe refunds as increasing, rising or surging unless\na comparable previous-period refund value or count is supplied.\n12. Current-period refund totals must be described as current activity.\n\nKEY FINDINGS RULES\n\n1. Include every materially important finding supported by the investigation data. Do not arbitrarily limit the number of findings.\n\n2. Rank findings by absolute financial impact first, followed by order volume and meaningful percentage movement.\n\n3. Keep unrelated dimensions separate. Do not combine different channels or regions into one finding merely to reduce the number of findings.\n\n4. Each finding must have:\n   - A short, specific business-focused title.\n   - An observation containing actual previous and current values, absolute change, and percentage change where available.\n   - A business impact explaining the financial significance using supplied evidence.\n\n5. For channel findings, include sales contribution percentages when available. Clearly identify whether these refer to sales before refunds or net revenue after refunds.\n\n6. Identify growing channels as offsets to declines. Never describe an offset as a cause of the decline.\n\n7. Include significant regional, category and product movements when supported by the investigation data.\n\n8. Include meaningful AOV, order-volume and refund movements when available.\n\n9. Do not claim that a category or channel experienced a net gain unless its total revenue evidence establishes this.\n\n10. Do not claim that refunds are increasing or affecting a region unless the supplied comparison data supports that conclusion.\n\n11. Do not omit a material finding simply because it has a smaller percentage change. Prioritize absolute financial impact.\n\n12. Avoid repeating the same observation across multiple findings unless the additional detail provides meaningful context.\n\n13. Keep observations factual. Do not place hypotheses or recommendations inside key findings.\n\n14. Never invent missing values, comparisons, causal explanations or business impacts.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -528,
+        -16
+      ],
+      "id": "bc8145f1-e63c-484a-aae7-db34945ad131",
+      "name": "ALERT Chain"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=\nYou are an e-commerce performance analyst.\n\nGenerate a concise daily KPI summary using only the supplied JSON data.\n\nReturn valid JSON only. Do not generate HTML or Markdown.\n\nRequired output structure:\n\n{\n  \"report_date\": \"\",\n  \"daily_performance\": {\n    \"net_revenue\": \"\",\n    \"valid_orders\": 0,\n    \"refund_amount\": \"\"\n  },\n  \"performance_comparison\": {\n    \"previous_day_change\": \"\",\n    \"same_weekday_change\": \"\"\n  },\n  \"performance_status\": \"NORMAL\",\n  \"status_message\": \"\",\n  \"data_quality\": {\n    \"status\": \"\",\n    \"limitations\": []\n  },\n  \"generated_at\": \"\"\n}\n\nRules:\n- Use the actual report date from the input. Never infer or substitute a date.\n- Include net revenue, valid orders, and refund amount.\n- Include percentage changes versus the previous day and the same weekday last week.\n- Use supplied values exactly. Do not recalculate.\n- Clearly state that the day is NORMAL and no alert threshold was triggered.\n- Include data-quality status and all relevant limitations supplied in the payload.\n- Do not perform detailed segment investigations.\n- Do not invent explanations or causal claims.\n- Currency: INR.\n- If a value is unavailable, use null.\n- Return valid JSON only, without code fences.\n\nInput data:\n{{ JSON.stringify($json.body, null, 2) }}\n",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -528,
+        384
+      ],
+      "id": "3dc4baf8-2b5a-4bda-8814-022ffe9bf959",
+      "name": "NORMAL Chain"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.alert_summary.overall_status }}",
+                    "rightValue": "ALERT",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "61953d7f-eec8-4b60-9b2a-6749ae08c519"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Alert"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "id": "1af7b39b-15cf-4b1d-be28-2901fda95cbb",
+                    "leftValue": "={{ $json.body.alert_summary.overall_status }}",
+                    "rightValue": "NORMAL",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Normal"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "id": "9d4479d5-6835-4d49-9119-e5550a2b1530",
+                    "leftValue": "={{ $json.body.alert_summary.overall_status }}",
+                    "rightValue": "INCOMPLETE",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Incomplete"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.5,
+      "position": [
+        -752,
+        608
+      ],
+      "id": "ff742627-0d88-46df-8781-5551581bab06",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "sendTo": "your-email@example.com",
+        "subject": "Data Coverage Warning – E-commerce Monitor",
+        "message": "=\n<!DOCTYPE html>\n<html>\n<body style=\"margin:0;padding:20px;background:#f4f6f8;font-family:Arial,sans-serif;color:#1f2937;\">\n\n<div style=\"max-width:650px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;\">\n\n  <div style=\"background:#c46a16;padding:22px 26px;color:#ffffff;\">\n    <div style=\"font-size:11px;letter-spacing:1.5px;font-weight:bold;\">\n      DAILY BUSINESS REPORT\n    </div>\n    <div style=\"font-size:21px;font-weight:bold;margin-top:8px;\">\n      Data Coverage Warning\n    </div>\n    <div style=\"font-size:12px;margin-top:5px;color:#fff0dc;\">\n      Reporting date: {{ $json.body.report_metadata.report_date }}\n    </div>\n  </div>\n\n  <div style=\"padding:24px 26px;\">\n\n    <div style=\"border:1px solid #f3c78b;background:#fff8eb;padding:13px 15px;margin-bottom:22px;\">\n      <div style=\"font-size:14px;font-weight:bold;color:#92400e;\">\n        INCOMPLETE\n      </div>\n      <p style=\"font-size:12px;line-height:1.6;color:#78350f;margin:6px 0 0;\">\n        The daily e-commerce performance report could not be generated because the source data is incomplete.\n      </p>\n    </div>\n\n    <h3 style=\"font-size:15px;margin:0 0 12px;color:#1f2937;\">\n      Reporting Details\n    </h3>\n\n    <table style=\"width:100%;border-collapse:collapse;margin-bottom:22px;\">\n      <tr>\n        <td style=\"padding:11px 8px;border-bottom:1px solid #e5e7eb;font-size:12px;color:#64748b;\">\n          Reporting Date\n        </td>\n        <td style=\"padding:11px 8px;border-bottom:1px solid #e5e7eb;font-size:13px;font-weight:bold;text-align:right;\">\n          {{ $json.body.report_metadata.report_date }}\n        </td>\n      </tr>\n      <tr>\n        <td style=\"padding:11px 8px;border-bottom:1px solid #e5e7eb;font-size:12px;color:#64748b;\">\n          Report Status\n        </td>\n        <td style=\"padding:11px 8px;border-bottom:1px solid #e5e7eb;font-size:13px;font-weight:bold;color:#b45309;text-align:right;\">\n          INCOMPLETE\n        </td>\n      </tr>\n    </table>\n\n    <h3 style=\"font-size:15px;margin:0 0 12px;color:#1f2937;\">\n      Reason for Incomplete Report\n    </h3>\n\n    <div style=\"background:#f8fafc;border-left:3px solid #d97706;padding:13px 15px;margin-bottom:22px;\">\n      <p style=\"font-size:12px;line-height:1.7;color:#374151;margin:0;\">\n        {{ $json.body.limitations[0] }}\n      </p>\n    </div>\n\n    <h3 style=\"font-size:15px;margin:0 0 10px;color:#1f2937;\">\n      Recommended Action\n    </h3>\n\n    <p style=\"font-size:12px;line-height:1.7;color:#475569;margin:0;\">\n      Check the source order data and ensure it covers the requested reporting date.\n      Performance analysis was skipped to prevent an incomplete or misleading report.\n    </p>\n\n  </div>\n\n  <div style=\"padding:15px 26px;border-top:1px solid #e5e7eb;font-size:10px;color:#94a3b8;\">\n    Automated E-commerce Performance Monitor\n  </div>\n\n</div>\n</body>\n</html>\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -464,
+        784
+      ],
+      "id": "99867086-0e4f-43f4-a15c-f36292e5c35d",
+      "name": "Send a message1",
+      "webhookId": "a5449b93-7841-4f6b-b0ef-12c0a70ea2e4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id":"REPLACE_AFTER_IMPORT",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "your-email@example.com",
+        "subject": "E-commerce Monitor – Unexpected Status",
+        "message": "=\n<!DOCTYPE html>\n<html>\n<body style=\"margin:0;padding:20px;background:#f4f6f8;font-family:Arial,sans-serif;color:#1f2937;\">\n\n<div style=\"max-width:650px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;\">\n\n  <div style=\"background:#c46a16;padding:22px 26px;color:#ffffff;\">\n    <div style=\"font-size:11px;letter-spacing:1.5px;font-weight:bold;\">\n      DAILY BUSINESS REPORT\n    </div>\n    <div style=\"font-size:21px;font-weight:bold;margin-top:8px;\">\n      Unexpected Report Status\n    </div>\n    <div style=\"font-size:12px;margin-top:5px;color:#fff0dc;\">\n      Reporting date: {{ $json.body.report_metadata.report_date }}\n    </div>\n  </div>\n\n  <div style=\"padding:24px 26px;\">\n\n    <div style=\"border:1px solid #f0b5b5;background:#fff1f1;padding:13px 15px;margin-bottom:22px;\">\n      <div style=\"font-size:14px;font-weight:bold;color:#b91c1c;\">\n        UNRECOGNIZED STATUS\n      </div>\n      <p style=\"font-size:12px;line-height:1.6;color:#991b1b;margin:6px 0 0;\">\n        The daily performance monitor received a status that is not recognized by the workflow.\n      </p>\n    </div>\n\n    <h3 style=\"font-size:15px;margin:0 0 12px;color:#1f2937;\">\n      Execution Details\n    </h3>\n\n    <table style=\"width:100%;border-collapse:collapse;margin-bottom:22px;\">\n      <tr>\n        <td style=\"padding:11px 8px;border-bottom:1px solid #e5e7eb;font-size:12px;color:#64748b;\">\n          Status Received\n        </td>\n        <td style=\"padding:11px 8px;border-bottom:1px solid #e5e7eb;font-size:13px;font-weight:bold;color:#b91c1c;text-align:right;\">\n          {{ $json.body.alert_summary.overall_status }}\n        </td>\n      </tr>\n      <tr>\n        <td style=\"padding:11px 8px;border-bottom:1px solid #e5e7eb;font-size:12px;color:#64748b;\">\n          Reporting Date\n        </td>\n        <td style=\"padding:11px 8px;border-bottom:1px solid #e5e7eb;font-size:13px;font-weight:bold;text-align:right;\">\n          {{ $json.body.report_metadata.report_date }}\n        </td>\n      </tr>\n    </table>\n\n    <h3 style=\"font-size:15px;margin:0 0 10px;color:#1f2937;\">\n      Recommended Action\n    </h3>\n\n    <p style=\"font-size:12px;line-height:1.7;color:#475569;margin:0;\">\n      Inspect the workflow execution and investigate why the unexpected status was received.\n      Verify the incoming payload and status-routing conditions before relying on subsequent reports.\n    </p>\n\n  </div>\n\n  <div style=\"padding:15px 26px;border-top:1px solid #e5e7eb;font-size:10px;color:#94a3b8;\">\n    Automated E-commerce Performance Monitor\n  </div>\n\n</div>\n</body>\n</html>\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -464,
+        976
+      ],
+      "id": "f0f6bda3-ea0e-4b98-a4c4-989aea7e051a",
+      "name": "Send a message2",
+      "webhookId": "a5449b93-7841-4f6b-b0ef-12c0a70ea2e4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_AFTER_IMPORT",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst raw = $input.first().json.text;\nconst report = JSON.parse(raw);\n\nconst esc = (value) => String(value ?? \"\")\n  .replace(/&/g, \"&amp;\")\n  .replace(/</g, \"&lt;\")\n  .replace(/>/g, \"&gt;\")\n  .replace(/\"/g, \"&quot;\")\n  .replace(/'/g, \"&#39;\");\n\nconst list = (items) => {\n  if (!items || !items.length) {\n    return \"<li>No additional information available.</li>\";\n  }\n  return items.map(item =>\n    `<li style=\"margin-bottom:7px;\">${esc(item)}</li>`\n  ).join(\"\");\n};\n\n// Compact, consistent key findings\nconst findings = report.key_findings.map((item, index) => `\n  <div style=\"padding:13px 0;border-bottom:1px solid #e5e7eb;\">\n    <div style=\"margin-bottom:6px;\">\n      <span style=\"font-size:11px;color:#9ca3af;font-weight:bold;\">\n        ${String(index + 1).padStart(2, \"0\")}\n      </span>\n      <strong style=\"font-size:13px;color:#1f2937;margin-left:7px;\">\n        ${esc(item.title)}\n      </strong>\n      <span style=\"font-size:10px;color:#92400e;margin-left:6px;\">\n        ${esc(item.priority)}\n      </span>\n    </div>\n    <p style=\"font-size:12px;line-height:1.65;color:#374151;margin:5px 0;\">\n      ${esc(item.observation)}\n    </p>\n    <p style=\"font-size:11px;line-height:1.6;color:#64748b;margin:5px 0 0;\">\n      <strong>Business impact:</strong> ${esc(item.business_impact)}\n    </p>\n  </div>\n`).join(\"\");\n\nconst p = report.daily_performance;\nconst a = report.performance_alert;\nconst areas = report.areas_to_investigate;\nconst dq = report.data_quality;\n\nconst html = `\n<div style=\"margin:0;padding:22px;background:#f1f3f6;\n            font-family:Arial,Helvetica,sans-serif;\">\n\n<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\"\n style=\"max-width:760px;margin:auto;background:#ffffff;\n border:1px solid #e5e7eb;\">\n\n<tr>\n<td style=\"padding:25px 28px;background:#f59e0b;\n           border-bottom:4px solid #d97706;\">\n  <div style=\"font-size:11px;color:#78350f;font-weight:bold;\n              letter-spacing:1px;\">DAILY BUSINESS REPORT</div>\n  <div style=\"font-size:24px;font-weight:bold;color:#ffffff;\n              margin-top:7px;\">E-commerce Performance Alert</div>\n  <div style=\"font-size:12px;color:#78350f;margin-top:8px;\">\n    Reporting Date: ${esc(p.report_date)}\n  </div>\n</td>\n</tr>\n\n<tr>\n<td style=\"padding:22px 26px;\">\n\n<div style=\"padding:11px 14px;background:#fff7ed;\n            border:1px solid #fed7aa;margin-bottom:20px;\">\n  <strong style=\"font-size:12px;color:#9a3412;\">\n    ALERT STATUS: ${esc(a.alert_status)}\n  </strong>\n</div>\n\n<!-- Daily Performance: simple typography, no cards -->\n\n<h3 style=\"font-size:15px;color:#1f2937;margin:0 0 12px;\">\nDaily Performance\n</h3>\n\n<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\"\n style=\"border-collapse:collapse;margin-bottom:22px;\">\n<tr>\n<td width=\"50%\" style=\"padding:12px 10px 12px 0;\n                       border-bottom:1px solid #e5e7eb;\">\n  <div style=\"font-size:10px;color:#64748b;letter-spacing:.4px;\">\n    NET REVENUE\n  </div>\n  <div style=\"font-size:21px;font-weight:bold;color:#1e3a8a;margin-top:5px;\">\n    ${esc(p.net_revenue)}\n  </div>\n</td>\n<td width=\"50%\" style=\"padding:12px 0 12px 14px;\n                       border-bottom:1px solid #e5e7eb;\">\n  <div style=\"font-size:10px;color:#64748b;letter-spacing:.4px;\">\n    VALID ORDERS\n  </div>\n  <div style=\"font-size:21px;font-weight:bold;color:#1f2937;margin-top:5px;\">\n    ${esc(p.valid_orders)}\n  </div>\n</td>\n</tr>\n<tr>\n<td width=\"50%\" style=\"padding:12px 10px 5px 0;\">\n  <div style=\"font-size:10px;color:#64748b;letter-spacing:.4px;\">\n    REFUND COUNT\n  </div>\n  <div style=\"font-size:17px;font-weight:bold;color:#1f2937;margin-top:5px;\">\n    ${esc(p.refund_count)}\n  </div>\n</td>\n<td width=\"50%\" style=\"padding:12px 0 5px 14px;\">\n  <div style=\"font-size:10px;color:#64748b;letter-spacing:.4px;\">\n    REFUND AMOUNT\n  </div>\n  <div style=\"font-size:17px;font-weight:bold;color:#991b1b;margin-top:5px;\">\n    ${esc(p.refund_amount)}\n  </div>\n</td>\n</tr>\n</table>\n\n<h3 style=\"font-size:15px;color:#1f2937;margin:0 0 10px;\">\nPerformance Comparison\n</h3>\n\n<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\"\n style=\"border-collapse:collapse;font-size:12px;margin-bottom:12px;\">\n<tr style=\"background:#f3f4f6;\">\n  <td style=\"padding:10px;font-weight:bold;\">Comparison</td>\n  <td style=\"padding:10px;font-weight:bold;\">Revenue Baseline</td>\n  <td style=\"padding:10px;font-weight:bold;\">Movement</td>\n</tr>\n<tr>\n  <td style=\"padding:10px;border-bottom:1px solid #e5e7eb;\">\n    Previous Day\n  </td>\n  <td style=\"padding:10px;border-bottom:1px solid #e5e7eb;\">\n    ${esc(a.previous_day_comparison)}\n  </td>\n  <td style=\"padding:10px;border-bottom:1px solid #e5e7eb;\">\n    ${esc(a.previous_day_change)}\n    ${a.previous_day_triggered ? \" | TRIGGERED\" : \"\"}\n  </td>\n</tr>\n<tr>\n  <td style=\"padding:10px;border-bottom:1px solid #e5e7eb;\">\n    Same Weekday Last Week\n  </td>\n  <td style=\"padding:10px;border-bottom:1px solid #e5e7eb;\">\n    ${esc(a.same_weekday_comparison)}\n  </td>\n  <td style=\"padding:10px;border-bottom:1px solid #e5e7eb;\">\n    ${esc(a.same_weekday_change)}\n    ${a.same_weekday_triggered ? \" | TRIGGERED\" : \"\"}\n  </td>\n</tr>\n</table>\n\n<div style=\"font-size:12px;line-height:1.6;color:#4b5563;\n            padding:10px;background:#f9fafb;margin-bottom:22px;\">\n  ${esc(a.alert_explanation)}\n</div>\n\n<!-- Key Findings: numbered evidence-based layout -->\n\n<h3 style=\"font-size:15px;color:#1f2937;margin:0 0 8px;\">\nKey Findings\n</h3>\n\n<div style=\"margin-bottom:22px;\">\n  ${findings}\n</div>\n\n<!-- Areas to Investigate: unchanged -->\n\n<div style=\"padding:15px;background:#f3f4f6;\n            border:1px solid #d1d5db;margin-bottom:22px;\">\n\n<h3 style=\"font-size:15px;color:#1f2937;margin:0 0 12px;\">\nAreas to Investigate\n</h3>\n\n<strong style=\"font-size:12px;color:#374151;\">Observed Facts</strong>\n<ul style=\"font-size:12px;line-height:1.6;color:#374151;\n           padding-left:18px;margin-top:7px;\">\n${list(areas.observed_facts)}\n</ul>\n\n<strong style=\"font-size:12px;color:#374151;\">Possible Explanations</strong>\n<ul style=\"font-size:12px;line-height:1.6;color:#374151;\n           padding-left:18px;margin-top:7px;\">\n${list(areas.possible_explanations)}\n</ul>\n\n<strong style=\"font-size:12px;color:#374151;\">Recommended Checks</strong>\n<ul style=\"font-size:12px;line-height:1.6;color:#374151;\n           padding-left:18px;margin-top:7px;\">\n${list(areas.recommended_checks)}\n</ul>\n</div>\n\n<h3 style=\"font-size:15px;color:#1f2937;margin:0 0 10px;\">\nData Quality and Limitations\n</h3>\n\n<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\"\n style=\"border:1px solid #e5e7eb;border-collapse:collapse;\n margin-bottom:20px;\">\n<tr>\n<td style=\"padding:10px;font-size:12px;\">\n<strong>Data Quality Status:</strong> ${esc(dq.status)}\n</td>\n</tr>\n<tr>\n<td style=\"padding:10px;font-size:12px;\">\n<strong>Limitations:</strong>\n<ul style=\"line-height:1.6;padding-left:18px;\">\n${list(dq.limitations)}\n</ul>\n</td>\n</tr>\n</table>\n\n</td>\n</tr>\n\n<tr>\n<td style=\"padding:17px 26px;background:#f9fafb;\n           border-top:1px solid #e5e7eb;\">\n  <div style=\"font-size:11px;color:#6b7280;\">\n    Automated E-commerce Performance Monitor\n  </div>\n  <div style=\"font-size:10px;color:#9ca3af;margin-top:5px;\">\n    Generated from available business performance data.\n  </div>\n</td>\n</tr>\n\n</table>\n</div>\n`;\n\nreturn [{ json: { html } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -176,
+        96
+      ],
+      "id": "e9834045-edf1-4ee6-ba37-940559352718",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst raw = $input.first().json.text;\nconst report = JSON.parse(raw);\n\nconst esc = (value) => String(value ?? \"\")\n  .replace(/&/g, \"&amp;\")\n  .replace(/</g, \"&lt;\")\n  .replace(/>/g, \"&gt;\")\n  .replace(/\"/g, \"&quot;\")\n  .replace(/'/g, \"&#39;\");\n\nconst formatINR = (value) => {\n  if (value === null || value === undefined || value === \"\") {\n    return \"Unavailable\";\n  }\n\n  const numericValue = Number(\n    String(value).replace(/INR/gi, \"\").replace(/,/g, \"\").trim()\n  );\n\n  if (!Number.isFinite(numericValue)) {\n    return esc(value);\n  }\n\n  return \"₹\" + numericValue.toLocaleString(\"en-IN\", {\n    minimumFractionDigits: 2,\n    maximumFractionDigits: 2\n  });\n};\n\nconst p = report.daily_performance;\nconst c = report.performance_comparison;\nconst dq = report.data_quality;\n\nconst limitations = (dq.limitations || []).map(item =>\n  `<li style=\"margin-bottom:7px;\">${esc(item)}</li>`\n).join(\"\");\n\nconst html = `\n<!DOCTYPE html>\n<html>\n<body style=\"margin:0;padding:20px;background:#f4f6f8;font-family:Arial,sans-serif;color:#1f2937;\">\n\n<div style=\"max-width:650px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;\">\n\n  <div style=\"background:#c46a16;padding:22px 26px;color:#ffffff;\">\n    <div style=\"font-size:11px;letter-spacing:1.5px;font-weight:bold;\">\n      DAILY BUSINESS REPORT\n    </div>\n    <div style=\"font-size:21px;font-weight:bold;margin-top:8px;\">\n      Daily Performance Summary\n    </div>\n    <div style=\"font-size:12px;margin-top:5px;color:#fff0dc;\">\n      ${esc(report.report_date)}\n    </div>\n  </div>\n\n  <div style=\"padding:24px 26px;\">\n\n    <div style=\"font-size:12px;color:#64748b;font-weight:bold;letter-spacing:0.8px;\">\n      PERFORMANCE STATUS\n    </div>\n\n    <div style=\"margin-top:9px;font-size:19px;font-weight:bold;color:#15803d;\">\n      NORMAL\n    </div>\n\n    <p style=\"font-size:13px;line-height:1.6;color:#374151;margin:8px 0 22px;\">\n      ${esc(report.status_message)}\n    </p>\n\n    <h3 style=\"font-size:15px;margin:0 0 12px;color:#1f2937;\">\n      Daily Performance\n    </h3>\n\n    <table style=\"width:100%;border-collapse:collapse;margin-bottom:22px;\">\n      <tr>\n        <td style=\"padding:12px 8px;border-bottom:1px solid #e5e7eb;font-size:12px;color:#64748b;\">Net Revenue</td>\n        <td style=\"padding:12px 8px;border-bottom:1px solid #e5e7eb;font-size:14px;font-weight:bold;text-align:right;\">${formatINR(p.net_revenue)}</td>\n      </tr>\n      <tr>\n        <td style=\"padding:12px 8px;border-bottom:1px solid #e5e7eb;font-size:12px;color:#64748b;\">Valid Orders</td>\n        <td style=\"padding:12px 8px;border-bottom:1px solid #e5e7eb;font-size:14px;font-weight:bold;text-align:right;\">${esc(p.valid_orders)}</td>\n      </tr>\n      <tr>\n        <td style=\"padding:12px 8px;border-bottom:1px solid #e5e7eb;font-size:12px;color:#64748b;\">Refund Amount</td>\n        <td style=\"padding:12px 8px;border-bottom:1px solid #e5e7eb;font-size:14px;font-weight:bold;text-align:right;\">${formatINR(p.refund_amount)}</td>\n      </tr>\n    </table>\n\n    <h3 style=\"font-size:15px;margin:0 0 12px;color:#1f2937;\">\n      Performance Comparison\n    </h3>\n\n    <table style=\"width:100%;border-collapse:collapse;margin-bottom:22px;\">\n      <tr style=\"background:#f8fafc;\">\n        <th style=\"padding:10px;text-align:left;font-size:11px;color:#64748b;\">Comparison</th>\n        <th style=\"padding:10px;text-align:right;font-size:11px;color:#64748b;\">Revenue Change</th>\n      </tr>\n      <tr>\n        <td style=\"padding:11px 10px;border-bottom:1px solid #e5e7eb;font-size:12px;\">Previous Day</td>\n        <td style=\"padding:11px 10px;border-bottom:1px solid #e5e7eb;text-align:right;font-size:12px;font-weight:bold;\">${esc(c.previous_day_change)}</td>\n      </tr>\n      <tr>\n        <td style=\"padding:11px 10px;border-bottom:1px solid #e5e7eb;font-size:12px;\">Same Weekday Last Week</td>\n        <td style=\"padding:11px 10px;border-bottom:1px solid #e5e7eb;text-align:right;font-size:12px;font-weight:bold;\">${esc(c.same_weekday_change)}</td>\n      </tr>\n    </table>\n\n    <h3 style=\"font-size:15px;margin:0 0 12px;color:#1f2937;\">\n      Data Quality\n    </h3>\n\n    <p style=\"font-size:12px;margin:0 0 12px;\">\n      <strong>Status:</strong>\n      <span style=\"color:#15803d;font-weight:bold;\">${esc(dq.status)}</span>\n    </p>\n\n    ${limitations.length ? `\n      <p style=\"font-size:12px;font-weight:bold;margin:0 0 8px;\">Limitations</p>\n      <ul style=\"padding-left:20px;font-size:12px;line-height:1.6;color:#475569;margin:0;\">\n        ${limitations}\n      </ul>\n    ` : \"\"}\n\n  </div>\n\n  <div style=\"padding:15px 26px;border-top:1px solid #e5e7eb;font-size:10px;color:#94a3b8;\">\n    Generated at: ${esc(report.generated_at)}\n  </div>\n\n</div>\n</body>\n</html>\n`;\n\nreturn [{ json: { html } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -176,
+        496
+      ],
+      "id": "907b21b7-7179-486e-a40c-d5ade7eb6b18",
+      "name": "Code in JavaScript1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "ALERT Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "NORMAL Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ALERT Chain": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NORMAL Chain": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "ALERT Chain",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "NORMAL Chain",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "c65b8bdc-daee-4e75-893a-b8d0ca939f2a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c149c1c9ba90fda4a80c2ce8ce9e5808d622aebaa5dfbb545ae8d90c818aef60"
+  },
+  "nodeGroups": [],
+  "id": "0IP348r8UFHsfnIk",
+  "tags": []
+}
