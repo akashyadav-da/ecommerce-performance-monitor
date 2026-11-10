@@ -206,9 +206,46 @@ The system generates different email reports depending on performance status and
 Triggered when net revenue changes by 10% or more compared with the previous day or the same weekday last week.
 
 
-[![Alert email - top](docs/images/email-alert-top.png)](docs/images/email-alert-top.png)
+### ALERT Email
 
-[![Alert email - bottom](docs/images/email-alert-bottom.png)](docs/images/email-alert-bottom.png)
+<table>
+  <tr>
+    <td width="50%">
+      <strong>Part 1 — Performance Summary</strong><br>
+      <a href="docs/images/alert1.png">
+        <img src="docs/images/alert1.png" width="100%">
+      </a>
+    </td>
+    <td width="50%">
+      <strong>Part 2 — Performance Investigation</strong><br>
+      <a href="docs/images/alert2.png">
+        <img src="docs/images/alert2.png" width="100%">
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <strong>Part 3 — Business Analysis</strong><br>
+      <a href="docs/images/alert3.png">
+        <img src="docs/images/alert3.png" width="100%">
+      </a>
+    </td>
+    <td width="50%">
+      <strong>Part 4 — Recommendations</strong><br>
+      <a href="docs/images/alert4.png">
+        <img src="docs/images/alert4.png" width="100%">
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+      <strong>Part 5 — Additional Details</strong><br>
+      <a href="docs/images/alert5.png">
+        <img src="docs/images/alert5.png" width="70%">
+      </a>
+    </td>
+  </tr>
+</table>
 
 ### 2. NORMAL Report
 
