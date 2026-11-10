@@ -251,23 +251,78 @@ Triggered when net revenue changes by 10% or more compared with the previous day
 
 Sent when revenue performance remains within the configured alert threshold.
 
-![Normal email](docs/images/email-normal.png)
+<table>
+  <tr>
+    <td width="50%">
+      <strong>Part 1</strong><br>
+      <a href="docs/images/normal1.png">
+        <img src="docs/images/normal1.png" width="100%">
+      </a>
+    </td>
+    <td width="50%">
+      <strong>Part 2</strong><br>
+      <a href="docs/images/normal2.png">
+        <img src="docs/images/normal2.png" width="100%">
+      </a>
+    </td>
+  </tr>
+</table>
 
 ### 3. INCOMPLETE Report
 
 Sent when source data is incomplete or does not cover the required reporting period.
-![Incomplete email](docs/images/email-incomplete.png)
+
+<table>
+  <tr>
+    <td width="50%">
+      <strong>Part 1</strong><br>
+      <a href="docs/images/incomplete1.png">
+        <img src="docs/images/incomplete1.png" width="100%">
+      </a>
+    </td>
+    <td width="50%">
+      <strong>Part 2</strong><br>
+      <a href="docs/images/incomplete2.png">
+        <img src="docs/images/incomplete2.png" width="100%">
+      </a>
+    </td>
+  </tr>
+</table>
 
 ### 4. Unexpected Status Notification
 
 Sent when the reporting workflow encounters an unexpected status that cannot be handled by the standard reporting branches.
-![Unexpected status email](docs/images/email-unexpected.png)
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="docs/images/unexpected.png">
+        <img src="docs/images/unexpected.png" width="75%">
+      </a>
+    </td>
+  </tr>
+</table>
 
 ### 5. Developer Error Notification
 
 A separate error-handling workflow sends developer notifications when the Python pipeline fails. The notification includes the error details and traceback to support debugging.
 
-![Developer error email](docs/images/email-developer-error.png)
+<table>
+  <tr>
+    <td width="50%">
+      <strong>Part 1 — Error Notification</strong><br>
+      <a href="docs/images/error1.png">
+        <img src="docs/images/error1.png" width="100%">
+      </a>
+    </td>
+    <td width="50%">
+      <strong>Part 2 — Error Details</strong><br>
+      <a href="docs/images/error2.png">
+        <img src="docs/images/error2.png" width="100%">
+      </a>
+    </td>
+  </tr>
+</table>
 
 ## Data Quality and Error Handling
 
