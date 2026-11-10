@@ -141,8 +141,8 @@ Net revenue is calculated after applicable discounts and refunds.
 
 The system monitors:
 
-- nue
-- Valid Net ReveOrders
+- Net Revenue
+- Valid Orders
 - Refund Amount
 - Refund Count
 - Average Order Value (AOV)
@@ -361,15 +361,21 @@ The reporting workflow uses the Asia/Kolkata timezone and INR as its reporting c
 ```text
 ecommerce-performance-monitor/
 │
-├── data/
+├── data/                  # Generated locally; gitignored
 │   ├── raw/
 │   └── processed/
 │
+├── docs/
+│   ├── images/
+│   └── ai_business_brief_prompt.txt
+│
+├── n8n/
+│   ├── Ecommerce-Performance-Monitor.json
+│   └── Developer-Error-Notify.json
+│
 ├── sql/
-│
-├── logs/
-│
-├── reports/
+│   ├── archive/
+│   └── *.sql
 │
 ├── generate_data.py
 ├── prepare_data.py
@@ -385,11 +391,9 @@ ecommerce-performance-monitor/
 ├── inspect_refund_errors.py
 ├── validate_dates.py
 │
-├── ai_business_brief_prompt.txt
 ├── requirements.txt
 ├── .env.example
 ├── .gitignore
-├── ecommerce.duckdb
 └── README.md
 ```
 
