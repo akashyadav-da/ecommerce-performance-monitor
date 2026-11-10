@@ -79,13 +79,13 @@ Python Pipeline Failure
 
 The main n8n workflow receives the daily analytics payload, evaluates the reporting status, generates the appropriate email content, and sends the report through Gmail. AI-powered business investigation is triggered for revenue alerts.
 
-![Main n8n Workflow](docs/images/main-workflow.png)
+![Main n8n workflow](docs/images/main-workflow.png)
 
 ### Developer Error Workflow
 
 A separate webhook-triggered workflow receives Python pipeline failure details and sends a developer notification with the error message and traceback.
 
-![Developer Error Workflow](docs/images/error-workflow.png)
+![Developer error workflow](docs/images/error-workflow.png)
 
 
 ## Technology Stack
@@ -205,33 +205,30 @@ The system generates different email reports depending on performance status and
 
 Triggered when net revenue changes by 10% or more compared with the previous day or the same weekday last week.
 
-![Alert Email - Top](docs/images/email-alert-top.png)
-
-![Alert Email - Bottom](docs/images/email-alert-bottom.png)
+![Alert email - top](docs/images/email-alert-top.png)
+![Alert email - bottom](docs/images/email-alert-bottom.png)
 
 ### 2. NORMAL Report
 
 Sent when revenue performance remains within the configured alert threshold.
 
-![Normal Email Report](docs/images/email-normal.png)
+![Normal email](docs/images/email-normal.png)
 
 ### 3. INCOMPLETE Report
 
 Sent when source data is incomplete or does not cover the required reporting period.
-
-![Incomplete Email Report](docs/images/email-incomplete.png)
+![Incomplete email](docs/images/email-incomplete.png)
 
 ### 4. Unexpected Status Notification
 
 Sent when the reporting workflow encounters an unexpected status that cannot be handled by the standard reporting branches.
-
-![Unexpected Status Email](docs/images/email-unexpected.png)
+![Unexpected status email](docs/images/email-unexpected.png)
 
 ### 5. Developer Error Notification
 
 A separate error-handling workflow sends developer notifications when the Python pipeline fails. The notification includes the error details and traceback to support debugging.
 
-![Developer Error Email](docs/images/email-developer-error.png)
+![Developer error email](docs/images/email-developer-error.png)
 
 ## Data Quality and Error Handling
 
