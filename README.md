@@ -205,8 +205,10 @@ The system generates different email reports depending on performance status and
 
 Triggered when net revenue changes by 10% or more compared with the previous day or the same weekday last week.
 
-![Alert email - top](docs/images/email-alert-top.png)
-![Alert email - bottom](docs/images/email-alert-bottom.png)
+
+[![Alert email - top](docs/images/email-alert-top.png)](docs/images/email-alert-top.png)
+
+[![Alert email - bottom](docs/images/email-alert-bottom.png)](docs/images/email-alert-bottom.png)
 
 ### 2. NORMAL Report
 
