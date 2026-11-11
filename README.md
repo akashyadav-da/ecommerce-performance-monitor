@@ -79,7 +79,7 @@ Python Pipeline Failure
 
 The main n8n workflow receives the daily analytics payload, evaluates the reporting status, generates the appropriate email content, and sends the report through Gmail. AI-powered business investigation is triggered for revenue alerts.
 
-![Main n8n workflow](docs/images/main-workflow.png)
+![Main n8n workflow](https://raw.githubusercontent.com/akashyadav-da/ecommerce-performance-monitor/main/docs/images/main-workflow.png)
 
 ### Developer Error Workflow
 
